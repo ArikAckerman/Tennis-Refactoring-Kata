@@ -2,8 +2,8 @@ namespace Tennis
 {
     public class TennisGame3 : ITennisGame
     {
-        private int player2Points;
         private int player1Points;
+        private int player2Points;
         private string player1Name;
         private string player2Name;
         public static readonly string[] POINTS_NAMES = new[] { "Love", "Fifteen", "Thirty", "Forty" };
@@ -16,36 +16,70 @@ namespace Tennis
 
         public string GetScore()
         {
-            var isNotYetEndgame = (player1Points < 4 && player2Points < 4) && (player1Points + player2Points < 6);
-            if (isNotYetEndgame)
+            if (IsNotEndGame())
             {
-                var score = POINTS_NAMES[player1Points];
-                if (player1Points == player2Points)
-                    return score + "-All";
-                else
-                    return score + "-" + POINTS_NAMES[player2Points];
+                return GetRegularScore();
             }
             else
             {
-                if (player1Points == player2Points)
+                if (IsDeuce())
+                {
                     return "Deuce";
-                var leader = player1Points > player2Points ? player1Name : player2Name;
-                var pointsDifferenceIsOne = (player1Points - player2Points) * (player1Points - player2Points) == 1;
-                if (pointsDifferenceIsOne)
+                }
+
+                string leader = (player1Points > player2Points) ? player1Name : player2Name;
+
+                if (IsAdvantage())
+                {
                     return "Advantage " + leader;
+                }
                 else
+                {
                     return "Win for " + leader;
+                }
             }
+        }
+
+        private bool IsNotEndGame()
+        {
+            return (player1Points < 4 && player2Points < 4) && (player1Points + player2Points < 6);
+        }
+
+        private string GetRegularScore()
+        {
+            if (player1Points == player2Points)
+            {
+                return POINTS_NAMES[player1Points] + "-All";
+            }
+            else
+            {
+                return POINTS_NAMES[player1Points] + "-" + POINTS_NAMES[player2Points];
+            }
+        }
+
+        private bool IsDeuce()
+        {
+            return player1Points == player2Points;
+        }
+
+        private bool IsAdvantage()
+        {
+            int pointsDifference = player1Points - player2Points;
+            return Math.Abs(pointsDifference) == 1;
         }
 
         public void WonPoint(string playerName)
         {
             if (playerName == "player1")
-                this.player1Points += 1;
+            {
+                player1Points += 1;
+            }
             else
-                this.player2Points += 1;
+            {
+                player2Points += 1;
+            }
         }
-
     }
 }
+
 

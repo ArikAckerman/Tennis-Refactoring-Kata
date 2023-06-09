@@ -4,104 +4,85 @@ namespace Tennis
     {
         private int p1point;
         private int p2point;
-
-        private string p1res = "";
-        private string p2res = "";
         private string player1Name;
         private string player2Name;
 
         public TennisGame2(string player1Name, string player2Name)
         {
             this.player1Name = player1Name;
-            p1point = 0;
             this.player2Name = player2Name;
         }
 
         public string GetScore()
         {
-            var score = "";
-            if (p1point == p2point && p1point < 3)
+            if (IsGameTied())
             {
-                if (p1point == 0)
-                    score = "Love";
-                if (p1point == 1)
-                    score = "Fifteen";
-                if (p1point == 2)
-                    score = "Thirty";
-                score += "-All";
-            }
-            if (p1point == p2point && p1point > 2)
-                score = "Deuce";
-
-            if (p1point > 0 && p2point == 0)
-            {
-                if (p1point == 1)
-                    p1res = "Fifteen";
-                if (p1point == 2)
-                    p1res = "Thirty";
-                if (p1point == 3)
-                    p1res = "Forty";
-
-                p2res = "Love";
-                score = p1res + "-" + p2res;
-            }
-            if (p2point > 0 && p1point == 0)
-            {
-                if (p2point == 1)
-                    p2res = "Fifteen";
-                if (p2point == 2)
-                    p2res = "Thirty";
-                if (p2point == 3)
-                    p2res = "Forty";
-
-                p1res = "Love";
-                score = p1res + "-" + p2res;
+                return GetTiedScore();
             }
 
-            if (p1point > p2point && p1point < 4)
+            if (IsDeuce())
             {
-                if (p1point == 2)
-                    p1res = "Thirty";
-                if (p1point == 3)
-                    p1res = "Forty";
-                if (p2point == 1)
-                    p2res = "Fifteen";
-                if (p2point == 2)
-                    p2res = "Thirty";
-                score = p1res + "-" + p2res;
-            }
-            if (p2point > p1point && p2point < 4)
-            {
-                if (p2point == 2)
-                    p2res = "Thirty";
-                if (p2point == 3)
-                    p2res = "Forty";
-                if (p1point == 1)
-                    p1res = "Fifteen";
-                if (p1point == 2)
-                    p1res = "Thirty";
-                score = p1res + "-" + p2res;
+                return "Deuce";
             }
 
-            if (p1point > p2point && p2point >= 3)
+            if (HasAdvantage())
             {
-                score = "Advantage player1";
+                return GetAdvantageScore();
             }
 
-            if (p2point > p1point && p1point >= 3)
+            if (HasWinner())
             {
-                score = "Advantage player2";
+                return GetWinningScore();
             }
 
-            if (p1point >= 4 && p2point >= 0 && (p1point - p2point) >= 2)
-            {
-                score = "Win for player1";
-            }
-            if (p2point >= 4 && p1point >= 0 && (p2point - p1point) >= 2)
-            {
-                score = "Win for player2";
-            }
-            return score;
+            return GetStandardScore();
+        }
+
+        private bool IsGameTied()
+        {
+            return p1point == p2point && p1point < 3;
+        }
+
+        private string GetTiedScore()
+        {
+            string[] scoreOptions = { "Love", "Fifteen", "Thirty" };
+            string score = scoreOptions[p1point];
+            return $"{score}-All";
+        }
+
+        private bool IsDeuce()
+        {
+            return p1point == p2point && p1point >= 3;
+        }
+
+        private bool HasAdvantage()
+        {
+            return p1point > p2point && p2point >= 3 || p2point > p1point && p1point >= 3;
+        }
+
+        private string GetAdvantageScore()
+        {
+            string leadingPlayer = (p1point > p2point) ? player1Name : player2Name;
+            return $"Advantage {leadingPlayer}";
+        }
+
+        private bool HasWinner()
+        {
+            return p1point >= 4 && (p1point - p2point) >= 2 || p2point >= 4 && (p2point - p1point) >= 2;
+        }
+
+        private string GetWinningScore()
+        {
+            string winningPlayer = (p1point > p2point) ? player1Name : player2Name;
+            return $"Win for {winningPlayer}";
+        }
+
+        private string GetStandardScore()
+        {
+            string[] scoreOptions = { "Love", "Fifteen", "Thirty", "Forty" };
+            string p1res = scoreOptions[p1point];
+            string p2res = scoreOptions[p2point];
+            return $"{p1res}-{p2res}";
         }
 
         public void SetP1Score(int number)
@@ -114,7 +95,7 @@ namespace Tennis
 
         public void SetP2Score(int number)
         {
-            for (var i = 0; i < number; i++)
+            for (int i = 0; i < number; i++)
             {
                 P2Score();
             }
@@ -137,7 +118,7 @@ namespace Tennis
             else
                 P2Score();
         }
-
     }
 }
+
 
